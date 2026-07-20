@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>해외 출장 서약 및 서명</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; }
+
+  header { background: #1a2744; color: white; padding: 20px 24px; text-align: center; }
+  header h1 { font-size: 17px; font-weight: 700; }
+  header p { font-size: 12px; color: #8fa0c0; margin-top: 4px; }
+
+  .container { max-width: 520px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+  .card-title { font-size: 13px; font-weight: 700; color: #1a2744; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 6px; }
+  .card-title .badge { background: #1a2744; color: white; font-size: 11px; padding: 2px 7px; border-radius: 20px; font-weight: 600; }
+  .card-title .done-badge { background: #2e7d32; color: white; font-size: 10px; padding: 2px 7px; border-radius: 20px; margin-left: auto; display: none; }
+
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 500; }
+  .field input, .field select { width: 100%; border: 1px solid #ddd; border-radius: 7px; padding: 10px 12px; font-size: 14px; font-family: inherit; color: #1a1a1a; background: #fafafa; outline: none; transition: border-color 0.15s; }
+  .field input:focus, .field select:focus { border-color: #1a2744; background: white; }
+
+  /* 교육 자료 영역 */
+  .edu-box { background: #f0f3f8; border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+  .edu-box p { font-size: 12px; color: #444; line-height: 1.6; margin-bottom: 10px; }
+  .btn-edu { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; background: #1a2744; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; margin-bottom: 10px; }
+  .btn-edu:hover { background: #243560; }
+
+  .edu-confirm { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: white; border: 1.5px solid #ddd; border-radius: 7px; cursor: pointer; transition: border-color 0.15s; }
+  .edu-confirm.checked { border-color: #1a2744; background: #f0f3f8; }
+  .edu-confirm input[type="checkbox"] { width: 18px; height: 18px; accent-color: #1a2744; cursor: pointer; }
+  .edu-confirm span { font-size: 13px; font-weight: 500; color: #333; }
+
+  .oath-list { list-style: none; }
+  .oath-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+  .oath-item:last-child { border-bottom: none; }
+  .oath-item input[type="checkbox"] { width: 18px; height: 18px; min-width: 18px; accent-color: #1a2744; cursor: pointer; margin-top: 1px; }
+  .oath-item span { font-size: 12px; line-height: 1.6; color: #333; }
+
+  .check-all { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #f0f3f8; border-radius: 7px; margin-bottom: 12px; cursor: pointer; }
+  .check-all input[type="checkbox"] { width: 18px; height: 18px; accent-color: #1a2744; cursor: pointer; }
+  .check-all span { font-size: 13px; font-weight: 600; color: #1a2744; }
+
+  canvas { width: 100%; height: 160px; border: 1.5px solid #ddd; border-radius: 7px; background: #fafafa; display: block; touch-action: none; }
+  canvas.active { border-color: #1a2744; background: white; }
+  .sig-hint { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 13px; color: #bbb; pointer-events: none; text-align: center; }
+  .signature-wrap { position: relative; }
+  .sig-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .btn-clear { font-size: 12px; color: #888; background: none; border: 1px solid #ddd; border-radius: 6px; padding: 5px 12px; cursor: pointer; font-family: inherit; }
+
+  .btn-submit { width: 100%; background: #1a2744; color: white; border: none; border-radius: 10px; padding: 15px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; margin-top: 6px; }
+  .btn-submit:hover { background: #243560; }
+  .btn-submit:disabled { background: #aaa; cursor: not-allowed; }
+
+  .done { display: none; text-align: center; padding: 40px 20px; }
+  .done .icon { font-size: 48px; margin-bottom: 16px; }
+  .done h2 { font-size: 20px; font-weight: 700; color: #1a2744; margin-bottom: 8px; }
+  .done p { font-size: 13px; color: #666; line-height: 1.6; }
+  .done .summary { background: #f0f3f8; border-radius: 8px; padding: 14px 16px; margin: 20px 0; text-align: left; }
+  .done .summary p { font-size: 13px; color: #333; margin-bottom: 4px; }
+  .done .summary strong { color: #1a2744; }
+  .sig-preview { border: 1px solid #ddd; border-radius: 7px; margin-top: 10px; background: white; max-width: 100%; }
+  .required { color: #e53935; }
+
+  /* 단계 잠금 표시 */
+  .locked { opacity: 0.4; pointer-events: none; }
+  .step-note { font-size: 11px; color: #e53935; margin-bottom: 10px; display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>해외 출장 서약 및 서명</h1>
+  <p>출장 전 필수 이수 · 안전교육 → 비밀유지서약 → 서명</p>
+</header>
+
+<div class="container">
+  <div id="formSection">
+
+    <!-- STEP 1: 기본 정보 -->
+    <div class="card">
+      <div class="card-title"><span class="badge">1</span> 기본 정보</div>
+      <div class="field"><label>소속 회사명 <span class="required">*</span></label><input type="text" id="company" placeholder="회사명 입력"></div>
+      <div class="field"><label>성명 <span class="required">*</span></label><input type="text" id="name" placeholder="이름 입력"></div>
+      <div class="field"><label>직위</label><input type="text" id="position" placeholder="직위 입력"></div>
+      <div class="field"><label>업무 수행 기간 <span class="required">*</span></label><input type="text" id="period" placeholder="예: 2026.07.21 ~ 2026.07.28"></div>
+      <div class="field"><label>출장 목적지</label>
+        <select id="destination"><option value="">선택</option><option>미국</option><option>폴란드</option><option>기타</option></select>
+      </div>
+      <div class="field"><label>특정업무 내역</label><input type="text" id="task" placeholder="수행 업무 내용 입력"></div>
+    </div>
+
+    <!-- STEP 2: 안전교육 -->
+    <div class="card" id="eduCard">
+      <div class="card-title">
+        <span class="badge">2</span> 안전교육 이수
+        <span class="done-badge" id="eduDoneBadge">✓ 이수완료</span>
+      </div>
+      <div class="edu-box">
+        <p>아래 버튼을 눌러 교육 자료를 확인하세요.<br>자료를 열람한 후 이수 확인 체크를 해주세요.</p>
+        <button class="btn-edu" onclick="openEdu()">📄 교육 자료 열기</button>
+        <div class="edu-confirm" id="eduConfirmBox" onclick="toggleEduConfirm()">
+          <input type="checkbox" id="eduConfirm" onclick="event.stopPropagation(); updateEduState()">
+          <span>교육 자료를 모두 확인하였습니다</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: 비밀유지서약 -->
+    <div class="card" id="oathCard">
+      <div class="card-title"><span class="badge">3</span> 비밀유지서약</div>
+      <p class="step-note" id="oathNote">⚠ 안전교육 이수 확인 후 진행 가능합니다</p>
+
+      <div class="check-all" onclick="toggleAll('oath','checkAll')">
+        <input type="checkbox" id="checkAll" onclick="event.stopPropagation(); syncAll('oath', this.checked)">
+        <span>전체 동의</span>
+      </div>
+      <ul class="oath-list">
+        <li class="oath-item" onclick="toggle('oath1')"><input type="checkbox" class="oath" id="oath1"><span>회사의 정보보안 규정 및 지적재산권 보호를 위한 제반 규정을 준수하고 성실히 이행할 것을 서약합니다.</span></li>
+        <li class="oath-item" onclick="toggle('oath2')"><input type="checkbox" class="oath" id="oath2"><span>취득하거나 알게 된 시장정보, 경영정보, 업무상 비밀, 제품 정보 등 모든 회사 자료를 사전 승낙 없이 제3자에게 누설하거나 제공하지 않겠습니다.</span></li>
+        <li class="oath-item" onclick="toggle('oath3')"><input type="checkbox" class="oath" id="oath3"><span>회사의 자료를 외부로 유출하지 않으며, 특정업무 이외의 목적으로 사용하지 않겠습니다.</span></li>
+        <li class="oath-item" onclick="toggle('oath4')"><input type="checkbox" class="oath" id="oath4"><span>회사의 자료를 거래업체 또는 고객 등 업무 관련 인원에게만 전달하겠습니다.</span></li>
+        <li class="oath-item" onclick="toggle('oath5')"><input type="checkbox" class="oath" id="oath5"><span>특정업무 수행 시 항시 출입증(방문증)을 패용하겠습니다.</span></li>
+        <li class="oath-item" onclick="toggle('oath6')"><input type="checkbox" class="oath" id="oath6"><span>보호구역 및 통제구역에 대해 관련부서의 사전 승인 없이 일체 출입하지 않겠습니다.</span></li>
+        <li class="oath-item" onclick="toggle('oath7')"><input type="checkbox" class="oath" id="oath7"><span>비밀유지서약에 의거하여 정보보안감사에 동의하며, 보안감사에 필요한 정보를 즉각 제공하겠습니다.</span></li>
+        <li class="oath-item" onclick="toggle('oath8')"><input type="checkbox" class="oath" id="oath8"><span>본 서약을 위반할 경우 부정경쟁방지 및 영업비밀보호에 관한 법률에 따라 민·형사상 모든 책임을 질 것을 서약합니다.</span></li>
+      </ul>
+    </div>
+
+    <!-- STEP 4: 서명 -->
+    <div class="card" id="sigCard">
+      <div class="card-title"><span class="badge">4</span> 서명</div>
+      <p class="step-note" id="sigNote">⚠ 비밀유지서약 완료 후 진행 가능합니다</p>
+      <div class="signature-wrap">
+        <canvas id="sigCanvas"></canvas>
+        <div class="sig-hint" id="sigHint">이 곳에 서명하세요</div>
+      </div>
+      <div class="sig-actions"><button class="btn-clear" onclick="clearSig()">지우기</button></div>
+    </div>
+
+    <button class="btn-submit" onclick="submit()">서약 및 서명 제출</button>
+
+  </div>
+
+  <!-- 완료 화면 -->
+  <div class="card done" id="doneSection">
+    <div class="icon">✅</div>
+    <h2>제출 완료</h2>
+    <p>비밀유지서약 및 안전교육 이수 확인이<br>완료되었습니다.</p>
+    <div class="summary" id="doneSummary"></div>
+    <img class="sig-preview" id="sigPreview" alt="서명">
+    <p style="margin-top:16px; font-size:12px; color:#999;">제출 일시: <span id="doneTime"></span></p>
+  </div>
+
+</div>
+
+<script>
+  // 교육 자료 열기
+  function openEdu() {
+    window.open('해외출장_안전교육자료.pdf', '_blank');
+  }
+
+  function toggleEduConfirm() {
+    const cb = document.getElementById('eduConfirm');
+    cb.checked = !cb.checked;
+    updateEduState();
+  }
+
+  function updateEduState() {
+    const checked = document.getElementById('eduConfirm').checked;
+    const box = document.getElementById('eduConfirmBox');
+    const badge = document.getElementById('eduDoneBadge');
+    const oathNote = document.getElementById('oathNote');
+    const oathCard = document.getElementById('oathCard');
+
+    box.classList.toggle('checked', checked);
+    badge.style.display = checked ? 'inline-block' : 'none';
+
+    if (checked) {
+      oathCard.classList.remove('locked');
+      oathNote.style.display = 'none';
+    } else {
+      oathCard.classList.add('locked');
+      oathNote.style.display = 'block';
+    }
+  }
+
+  // 초기 상태: 서약·서명 잠금
+  document.getElementById('oathCard').classList.add('locked');
+  document.getElementById('oathNote').style.display = 'block';
+
+  // 체크박스
+  function toggle(id) { document.getElementById(id).checked = !document.getElementById(id).checked; syncCheckAll(); }
+  function toggleAll(cls, allId) { const el = document.getElementById(allId); syncAll(cls, el.checked); }
+  function syncAll(cls, checked) { document.querySelectorAll('.' + cls).forEach(c => c.checked = checked); syncCheckAll(); }
+  function syncCheckAll() {
+    const all = [...document.querySelectorAll('.oath')];
+    document.getElementById('checkAll').checked = all.every(c => c.checked);
+  }
+
+  // 캔버스
+  const canvas = document.getElementById('sigCanvas');
+  const ctx = canvas.getContext('2d');
+  let drawing = false, hasSig = false;
+
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    const r = window.devicePixelRatio || 1;
+    canvas.width = rect.width * r;
+    canvas.height = rect.height * r;
+    ctx.scale(r, r);
+    ctx.strokeStyle = '#1a2744';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+  }
+
+  canvas.addEventListener('mousedown', e => { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+  canvas.addEventListener('mousemove', e => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); setSigStarted(); });
+  canvas.addEventListener('mouseup', () => drawing = false);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }, { passive: false });
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); setSigStarted(); }, { passive: false });
+  canvas.addEventListener('touchend', () => drawing = false);
+
+  function setSigStarted() {
+    hasSig = true;
+    canvas.classList.add('active');
+    document.getElementById('sigHint').style.display = 'none';
+  }
+
+  function clearSig() {
+    const rect = canvas.getBoundingClientRect();
+    ctx.clearRect(0, 0, rect.width, rect.height);
+    hasSig = false;
+    canvas.classList.remove('active');
+    document.getElementById('sigHint').style.display = '';
+  }
+
+  function submit() {
+    const company = document.getElementById('company').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const period = document.getElementById('period').value.trim();
+    const eduDone = document.getElementById('eduConfirm').checked;
+    const oaths = [...document.querySelectorAll('.oath')].every(c => c.checked);
+
+    if (!company) return alert('소속 회사명을 입력해주세요.');
+    if (!name) return alert('성명을 입력해주세요.');
+    if (!period) return alert('업무 수행 기간을 입력해주세요.');
+    if (!eduDone) return alert('안전교육 이수 확인을 해주세요.');
+    if (!oaths) return alert('비밀유지서약 항목을 모두 확인해주세요.');
+    if (!hasSig) return alert('서명을 해주세요.');
+
+    document.getElementById('doneSummary').innerHTML = `
+      <p><strong>소속:</strong> ${company}</p>
+      <p><strong>성명:</strong> ${name}</p>
+      <p><strong>직위:</strong> ${document.getElementById('position').value || '-'}</p>
+      <p><strong>기간:</strong> ${period}</p>
+      <p><strong>목적지:</strong> ${document.getElementById('destination').value || '-'}</p>
+      <p><strong>업무:</strong> ${document.getElementById('task').value || '-'}</p>
+    `;
+    document.getElementById('sigPreview').src = canvas.toDataURL();
+    document.getElementById('doneTime').textContent = new Date().toLocaleString('ko-KR');
+    document.getElementById('formSection').style.display = 'none';
+    document.getElementById('doneSection').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>
