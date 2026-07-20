@@ -75,7 +75,25 @@
       <div class="field"><label>직위</label><input type="text" id="position" placeholder="직위 입력"></div>
       <div class="field"><label>업무 수행 기간 <span class="required">*</span></label><input type="text" id="period" placeholder="예: 2026.07.21 ~ 2026.07.28"></div>
       <div class="field"><label>출장 목적지</label>
-        <select id="destination"><option value="">선택</option><option>미국</option><option>폴란드</option><option>기타</option></select>
+        <select id="destination"><option value="">선택</option>
+          <optgroup label="미국">
+            <option>미국 UC1</option>
+            <option>미국 UC2</option>
+            <option>미국 ESHD</option>
+            <option>미국 ESMI 홀랜드</option>
+            <option>미국 ESMI 3동 (랜싱)</option>
+          </optgroup>
+          <optgroup label="캐나다">
+            <option>캐나다 ESST</option>
+          </optgroup>
+          <optgroup label="중국">
+            <option>중국</option>
+          </optgroup>
+          <optgroup label="폴란드">
+            <option>폴란드</option>
+          </optgroup>
+          <option>기타</option>
+        </select>
       </div>
       <div class="field"><label>특정업무 내역</label><input type="text" id="task" placeholder="수행 업무 내용 입력"></div>
     </div>
@@ -88,9 +106,9 @@
       <div class="edu-box">
         <p>아래 버튼을 눌러 교육 자료를 확인하세요.<br>자료를 열람한 후 이수 확인 체크를 해주세요.</p>
         <button class="btn-edu" onclick="openEdu()">📄 교육 자료 열기</button>
-        <div class="edu-confirm" id="eduConfirmBox" onclick="toggleEduConfirm()">
-          <input type="checkbox" id="eduConfirm" onclick="event.stopPropagation(); updateEduState()">
-          <span>교육 자료를 모두 확인하였습니다</span>
+        <div class="edu-confirm" id="eduConfirmBox" onclick="toggleEduConfirm()" style="opacity:0.4; pointer-events:none;">
+          <input type="checkbox" id="eduConfirm" onclick="event.stopPropagation(); updateEduState()" disabled>
+          <span>📄 교육 자료를 먼저 열어주세요</span>
         </div>
       </div>
     </div>
@@ -141,8 +159,38 @@
 <script>
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxWZNZSdD_mXukhntXC0o54PLIuukzz9WHRZ2TaDBZQs5fpREdDGVySf9UAHMreg2c1/exec';
 
+  let eduOpened = false;
+  let eduTimer = null;
+  const EDU_WAIT = 5 * 60; // 5분 (초)
+
   function openEdu() {
     window.open('해외출장_안전교육자료.pdf', '_blank');
+    if (eduOpened) return;
+    eduOpened = true;
+
+    // 체크박스 비활성 상태로 안내 문구 변경
+    const box = document.getElementById('eduConfirmBox');
+    const label = box.querySelector('span');
+    box.style.opacity = '0.5';
+    box.style.pointerEvents = 'none';
+    document.getElementById('eduConfirm').disabled = true;
+
+    let remaining = EDU_WAIT;
+    label.textContent = `⏱ 열람 확인 중... ${Math.floor(remaining/60)}:${String(remaining%60).padStart(2,'0')} 후 체크 가능`;
+
+    eduTimer = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(eduTimer);
+        box.style.opacity = '1';
+        box.style.pointerEvents = 'auto';
+        document.getElementById('eduConfirm').disabled = false;
+        label.textContent = '✅ 교육 자료를 모두 확인하였습니다';
+        box.style.borderColor = '#1a2744';
+      } else {
+        label.textContent = `⏱ 열람 확인 중... ${Math.floor(remaining/60)}:${String(remaining%60).padStart(2,'0')} 후 체크 가능`;
+      }
+    }, 1000);
   }
 
   function toggleEduConfirm() {
