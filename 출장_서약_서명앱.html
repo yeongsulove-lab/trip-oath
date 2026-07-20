@@ -35,7 +35,7 @@
   .check-all { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #f0f3f8; border-radius: 7px; margin-bottom: 12px; cursor: pointer; }
   .check-all input[type="checkbox"] { width: 18px; height: 18px; accent-color: #1a2744; cursor: pointer; }
   .check-all span { font-size: 13px; font-weight: 600; color: #1a2744; }
-  canvas { width: 100%; height: 160px; border: 1.5px solid #ddd; border-radius: 7px; background: #fafafa; display: block; touch-action: none; }
+  canvas { width: 100%; height: 160px; border: 1.5px solid #ddd; border-radius: 7px; background: white; display: block; touch-action: none; }
   canvas.active { border-color: #1a2744; background: white; }
   .sig-hint { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 13px; color: #bbb; pointer-events: none; text-align: center; }
   .signature-wrap { position: relative; }
@@ -185,6 +185,8 @@
     canvas.width = rect.width * r;
     canvas.height = rect.height * r;
     ctx.scale(r, r);
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = '#1a2744';
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
